@@ -60,7 +60,10 @@ App.SlidesView = Ember.View.extend({
   setupListeners: function() {
     var controller = this.controller;
     $("body").on("keyup", function(e) {
-      console.info(e.keyCode);
+      if (e.target.nodeName == "INPUT") {
+        return;
+      }
+
       switch(e.keyCode) {
         case 37: // left
           controller.send("previousSlide");

@@ -1,28 +1,34 @@
-var attr = FP.attr,
-    one  = FP.hasOne,
-    many = FP.hasMany;
+var attr    = FP.attr,
+    one     = FP.hasOne,
+    hasMany = FP.hasMany;
 
 App.Store = FP.Store.extend({
   firebaseRoot: FIREBASE_ROOT
 });
 
 App.Person = FP.Model.extend({
-  firstName: FP.attr(),
-  lastName:  FP.attr(),
-  dob:       FP.attr("date"),
-  addresses: FP.hasMany("address")
+  firstName: attr(),
+  lastName:  attr(),
+  dob:       attr("date"),
+  addresses: hasMany("address")
 });
 
 App.Address = FP.Model.extend({
-  number:   FP.attr(),
-  street:   FP.attr(),
-  city:     FP.attr(),
-  postcode: FP.attr()
+  number:   attr(),
+  street:   attr(),
+  city:     attr(),
+  postcode: attr()
 });
 
-App.Thing = FP.Model.extend({
-  name: FP.attr(),
-  priority: Ember.computed.alias("name")
+App.Company = FP.Model.extend({
+  name: attr(),
+  priority: Ember.computed.alias("name"),
+  employees: hasMany("person", {embedded: false, as: "employee"})
+});
+
+App.Employee = FP.MetaModel.extend({
+  department: attr(),
+  jobTitle: attr()
 });
 
 App.SlidesSlide6Route = Ember.Route.extend({
@@ -54,6 +60,26 @@ App.SlidesRoute.reopen({
         lastName:  Faker.Name.lastName()
       });
       person.save();
+    },
+
+    updatePerson: function(person) {
+      person.setProperties({
+        firstName: Faker.Name.firstName(),
+        lastName:  Faker.Name.lastName()
+      });
+      person.save();
+    },
+
+    createCompany: function() {
+      var company = this.store.createRecord("company", {
+        name: Faker.Company.companyName()
+      });
+      company.save();
+    },
+
+    updateCompany: function(company) {
+      company.set("name", Faker.Company.companyName());
+      company.save();
     }
   }
 })
@@ -73,29 +99,78 @@ App.SlidesSlide8Route = Ember.Route.extend({
 App.SlidesSlide9Route = Ember.Route.extend({
   model: function() {
     return this.store.fetch("person", {limit: 5});
-  },
-
-  actions: {
-    updatePerson: function(person) {
-      person.setProperties({
-        firstName: Faker.Name.firstName(),
-        lastName:  Faker.Name.lastName()
-      });
-      person.save();
-    }
   }
 });
 
 App.SlidesSlide10Route = Ember.Route.extend({
   model: function() {
-    return this.store.fetch("thing");
+    return this.store.fetch("company");
+  }
+});
+
+App.SlidesSlide11Route = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("company", {startAt: "A", endAt: "D"});
+  }
+});
+
+App.SlidesSlide12Controller = Ember.ObjectController.extend({
+  people: [],
+  nonEmployees: function(){
+    var employeeIDs = this.get("employees").mapBy("id");
+    return this.get("people").filter(function(item){
+      return !employeeIDs.contains(item.get("id"));
+    });
+  }.property("people.[]", "employees.[]")
+});
+
+App.SlidesSlide12Route = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("company", {limit: 1}).then(function(companies){
+      return companies.get("firstObject");
+    });
   },
+
+  setupController: function(controller, model) {
+    this._super(controller, model);
+    controller.set("people", this.store.find("person"));
+  },
+
   actions: {
-    createThing: function() {
-      var thing = this.store.createRecord("thing", {
-        name: Faker.Company.companyName()
-      });
-      thing.save();
+    addEmployee: function(person) {
+      var company = this.controller.get("content");
+      var employee = this.store.createRecord("employee", {content: person});
+      company.get("employees").pushObject(employee);
+      company.save();
+    },
+
+    removeEmployee: function(person) {
+      var company  = this.controller.get("content");
+      var employee = company.get("employees").findBy("id", person.get("id"));
+      company.get("employees").removeObject(employee);
+      company.save();
     }
+  }
+});
+
+
+App.SlidesSlide13Controller = Ember.ObjectController.extend({
+
+});
+
+App.EmployeeItemController = Ember.ObjectController.extend({
+  detailsChanged: function() {
+    if (this.get("changeCameFromFirebase")) {
+      return;
+    }
+    this.get("content").save();
+  }.observes("department", "jobTitle")
+});
+
+App.SlidesSlide13Route = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("company", {limit: 1}).then(function(companies){
+      return companies.get("firstObject");
+    });
   }
 });

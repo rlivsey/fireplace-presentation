@@ -190,29 +190,124 @@
         </li>
       {{/each}}
     </ul>
+
+    <p>
+      <button {{action createRandomPerson}}>Add Person</button>
+    </p>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide10">
     <h1>Ordering Records</h1>
 
     <div class="code"><div><pre>
-      App.Thing = FP.Model.extend({
+      App.Company = FP.Model.extend({
         name: FP.attr(),
         priority: Ember.computed.alias("name")
       });</pre></div></div>
 
     <ul>
-      {{#each thing in controller}}
-        <li>
-          {{thing.name}}
+      {{#each company in controller}}
+        <li {{action updateCompany company}}>
+          {{company.name}}
         </li>
       {{/each}}
     </ul>
 
     <p>
-      <button {{action createThing}}>Add Thing</button>
+      <button {{action createCompany}}>Add Company</button>
     </p>
   </script>
+
+  <script type="text/x-handlebars" id="slides/slide11">
+    <h1>Filtering Records</h1>
+
+    <div class="code"><div><pre>
+    App.CompaniesRoute = Ember.Route.extend({
+      model: function() {
+        return this.store.fetch("company", {
+          startAt: "A", endAt: "D"
+        });
+      }
+    });</pre></div></div>
+
+    <ul>
+      {{#each company in controller}}
+        <li>
+          {{company.name}}
+        </li>
+      {{/each}}
+    </ul>
+
+    <p>
+      <button {{action createCompany}}>Add Company</button>
+    </p>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide12">
+    <h1>Non-embedded Relationships</h1>
+
+    <div class="code"><div><pre>
+      App.Company = FP.Model.extend({
+        name: FP.attr(),
+        employees: FP.hasMany("people", {embedded: false})
+      });</pre></div></div>
+
+    <p>
+      {{name}}
+    </p>
+
+    <h2>Employees</h2>
+    <ul>
+      {{#each person in employees}}
+        <li {{action removeEmployee person}}>
+          {{person.firstName}} {{person.lastName}}
+        </li>
+      {{/each}}
+    </ul>
+
+    <h2>Non-Employees</h2>
+    <ul>
+      {{#each person in nonEmployees}}
+        <li {{action addEmployee person}}>
+          {{person.firstName}} {{person.lastName}}
+        </li>
+      {{/each}}
+    </ul>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide13">
+    <h1>Non-embedded Relationships</h1>
+
+    <div class="code"><div><pre>
+      App.Company = FP.Model.extend({
+        name: FP.attr(),
+        employees: FP.hasMany("people", {
+          embedded: false,
+          as: "employee"
+        })
+      });
+
+      App.Employee = FP.MetaModel.extend({
+        department: attr(),
+        jobTitle: attr()
+      });</pre></div></div>
+
+    <p>
+      {{name}}
+    </p>
+
+    <h2>Employees</h2>
+    <ul>
+      {{#each person in employees itemController="employee_item"}}
+        <li>
+          {{person.firstName}} {{person.lastName}}
+          {{input value=person.department placeholder="Department"}}
+          {{input value=person.jobTitle placeholder="Job Title"}}
+        </li>
+      {{/each}}
+    </ul>
+  </script>
+
 
 
   <script type="text/x-handlebars" id="slides/slide99">

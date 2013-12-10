@@ -636,7 +636,11 @@ FP.FirebaseEventQueue.prototype = {
     var model, eventName, args, classyName, handlerName, triggerName;
 
     this.pending.forEach(function(item){
-      model     = item[0];
+      model = item[0];
+      if (model.isDestroying || model.isDestroyed) {
+        return;
+      }
+
       eventName = item[1];
       args      = item[2];
       classyName= classify(eventName);
@@ -1445,7 +1449,10 @@ FP.MetaModel = Ember.ObjectProxy.extend(FP.ModelMixin, {
         relationships = get(this.constructor, 'relationships');
 
     if (attributes.length || attributes.length) {
-      return this._super(includePriority);
+      var attrJSON = this._super(includePriority);
+      if (!jQuery.isEmptyObject(attrJSON)) {
+        return attrJSON;
+      }
     }
 
     var meta = get(this, "meta");
@@ -1588,6 +1595,13 @@ FP.IndexedCollection = FP.Collection.extend({
   },
 
   replaceContent: function(start, numRemoved, objectsAdded) {
+    // TODO - we need to allow adding a non-meta model
+    objectsAdded.forEach(function(object) {
+      if (object instanceof FP.MetaModel) {
+        object.set("parent", this);
+      }
+    }, this);
+
     objectsAdded = objectsAdded.map(function(object) {
       return (object instanceof Ember.Object) ? this.itemFromRecord(object) : object;
     }, this);
@@ -1944,6 +1958,7 @@ FP.Store = Ember.Object.extend({
         Ember.run(function(){
           // we don't reject if snapshot is empty, an empty collection is still valid
           set(collection, "snapshot", snapshot);
+          collection.inflateFromSnapshot();
           collection.listenToFirebase();
           resolve(collection);
         });
