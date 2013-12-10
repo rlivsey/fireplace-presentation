@@ -55,7 +55,7 @@ App.SlidesController = Ember.Controller.extend({
 
 App.SlidesView = Ember.View.extend({
   classNames: "slides-container",
-  classNameBindings: "controller.showingJSON",
+  classNameBindings: ["controller.showingJSON", "controller.focusedJSON"],
 
   setupListeners: function() {
     var controller = this.controller;
@@ -108,6 +108,10 @@ App.SlidesRoute = Ember.Route.extend({
 
     toggleJSON: function() {
       this.controller.toggleProperty("showingJSON");
+    },
+
+    focusJSON: function() {
+      this.controller.toggleProperty("focusedJSON");
     }
   }
 });

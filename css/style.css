@@ -52,7 +52,7 @@ button {
   right: 1em;
 }
 
-.json, .slide, .controls {
+.json, .json pre, .slide, .controls {
   transition: all 0.3s ease;
 }
 
@@ -62,8 +62,6 @@ button {
   right: 0;
   bottom: 0;
   width: 30%;
-  padding: 1em;
-  overflow: auto;
 
   -webkit-transform: translateX(100%);
 }
@@ -74,6 +72,21 @@ button {
 
 .showing-json .slide, .showing-json .controls {
   right: 30%;
+}
+
+.focused-json .slide, .showing-json .controls {
+
+}
+
+.focused-json .json {
+  width: 100%;
+}
+
+.focused-json .json pre {
+  width: 50%;
+  padding: 3em;
+  margin: auto;
+  font-size: 1.2em;
 }
 
 /* styling */
@@ -125,7 +138,6 @@ button {
 }
 
 .json {
-  padding: 1em;
   background-color: #FFF;
   color: #000;
 }
@@ -133,11 +145,23 @@ button {
 .json pre {
   font-size: 0.8em;
   margin: 0;
-}
-
-.json button {
   position: absolute;
   top: 1em;
+  left: 1em;
+  right: 1em;
+  bottom: 1em;
+  overflow: auto;
+}
+
+.json .clear-json {
+  position: fixed;
+  top: 1em;
+  right: 1em;
+}
+
+.json .focus-json {
+  position: fixed;
+  bottom: 1em;
   right: 1em;
 }
 
