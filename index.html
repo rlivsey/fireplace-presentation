@@ -152,7 +152,7 @@ App.PeopleRoute = Ember.Route.extend({
     <ul class="list">
       {{#each person in controller}}
         <li>
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
         </li>
       {{/each}}
     </ul>
@@ -175,7 +175,7 @@ App.PeopleRoute = Ember.Route.extend({
     <ul class="list">
       {{#each person in controller}}
         <li>
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
         </li>
       {{/each}}
     </ul>
@@ -198,7 +198,7 @@ person.save();</pre></div></div>
     <ul class="list">
       {{#each person in controller}}
         <li {{action updatePerson person}} class="clickable">
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
         </li>
       {{/each}}
     </ul>
@@ -272,7 +272,7 @@ App.Company = FP.Model.extend({
     <ul class="list">
       {{#each person in employees}}
         <li {{action removeEmployee person}} class="clickable">
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
         </li>
       {{/each}}
     </ul>
@@ -281,7 +281,7 @@ App.Company = FP.Model.extend({
     <ul class="list">
       {{#each person in nonEmployees}}
         <li {{action addEmployee person}} class="clickable">
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
         </li>
       {{/each}}
     </ul>
@@ -312,7 +312,7 @@ App.Employee = FP.MetaModel.extend({
     <ul class="list">
       {{#each person in employees itemController="employee_item"}}
         <li>
-          {{person.firstName}} {{person.lastName}}
+          {{person.fullName}}
           {{input value=person.department placeholder="Department"}}
           {{input value=person.jobTitle placeholder="Job Title"}}
         </li>
@@ -333,7 +333,7 @@ App.Person = FP.Model.extend({
 });</pre></div></div>
 
     <p>
-      {{firstName}} {{firstName}}
+      {{fullName}}
     </p>
 
     <ul class="list">
