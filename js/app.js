@@ -67,10 +67,12 @@ App.SlidesView = Ember.View.extend({
       switch(e.keyCode) {
         case 37: // left
           controller.send("previousSlide");
+          e.preventDefault();
           break;
         case 39: // right
         case 32: // space
           controller.send("nextSlide");
+          e.preventDefault();
           break;
       }
     });

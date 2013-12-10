@@ -58,13 +58,19 @@
     <h1>EmberFire</h1>
 
     <div class="code"><div><pre>
-App.IndexRoute = Ember.Route.extend({
-  model: function() {
-    return EmberFire.Array.create({
-      ref: new Firebase("https://<my-firebase>.firebaseio.com/list")
-    });
-  }
+EmberFire.Array.create({
+  ref: new Firebase("https://your-app.firebaseio.com/list")
+});
+
+EmberFire.Object.create({
+  ref: new Firebase("https://your-app.firebaseio.com/item")
 });</pre></div></div>
+
+    <p>
+      <a href="https://github.com/firebase/emberFire">
+        https://github.com/firebase/emberFire
+      </a>
+    </p>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide4">
@@ -91,6 +97,7 @@ App.Address = FP.Model.extend({
 
     <div class="code"><div><pre>
 var attr = FP.attr;
+
 App.Person = FP.Model.extend({
   firstName: attr(),
   lastName:  attr({key: "surname"}),
@@ -121,21 +128,23 @@ App.Store = FP.Store.extend({
 var person = this.store.createRecord("person", {
   firstName: "John",
   lastName: "Watson",
-  dob: new Date(Date.UTC(1852, 7, 7)),
-  addresses: [
-    this.store.createRecord("address", {
-      number: "221B",
-      street: "Baker Street",
-      city: "London",
-      postcode: "NW1 6XE"
-    })
-  ]
+  dob: new Date(Date.UTC(1852, 7, 7))
 });
+person.save();
 
+person.get("addresses").pushObject(
+  this.store.createRecord("address", {
+    number: "221B",
+    street: "Baker Street",
+    city: "London",
+    postcode: "NW1 6XE"
+  })
+);
 person.save();</pre></div></div>
 
     <p>
-      <button {{action createPerson}}>Run</button>
+      <button {{action createPerson}}>Create Person</button>
+      <button {{action addAddress}}>Add Address</button>
     </p>
   </script>
 
@@ -237,7 +246,7 @@ App.Company = FP.Model.extend({
 App.CompaniesRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company", {
-      startAt: "A", endAt: "D"
+      startAt: "A", endAt: "J"
     });
   }
 });</pre></div></div>
@@ -268,23 +277,29 @@ App.Company = FP.Model.extend({
       {{name}}
     </p>
 
-    <h2>Employees</h2>
-    <ul class="list">
-      {{#each person in employees}}
-        <li {{action removeEmployee person}} class="clickable">
-          {{person.fullName}}
-        </li>
-      {{/each}}
-    </ul>
+    <div class="two-columns">
+      <div class="column">
+        <h2>Employees</h2>
+        <ul class="list">
+          {{#each person in employees}}
+            <li {{action removeEmployee person}} class="clickable">
+              {{person.fullName}}
+            </li>
+          {{/each}}
+        </ul>
+      </div>
 
-    <h2>Non-Employees</h2>
-    <ul class="list">
-      {{#each person in nonEmployees}}
-        <li {{action addEmployee person}} class="clickable">
-          {{person.fullName}}
-        </li>
-      {{/each}}
-    </ul>
+      <div class="column">
+        <h2>Non-Employees</h2>
+        <ul class="list">
+          {{#each person in nonEmployees}}
+            <li {{action addEmployee person}} class="clickable">
+              {{person.fullName}}
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide14">
@@ -294,8 +309,7 @@ App.Company = FP.Model.extend({
 App.Company = FP.Model.extend({
   name: attr(),
   employees: hasMany("people", {
-    embedded: false,
-    as: "employee"
+    embedded: false, as: "employee"
   })
 });
 
@@ -308,16 +322,18 @@ App.Employee = FP.MetaModel.extend({
       {{name}}
     </p>
 
-    <h2>Employees</h2>
-    <ul class="list">
-      {{#each person in employees itemController="employee_item"}}
-        <li>
-          {{person.fullName}}
-          {{input value=person.department placeholder="Department"}}
-          {{input value=person.jobTitle placeholder="Job Title"}}
-        </li>
-      {{/each}}
-    </ul>
+    {{#if employees}}
+      <h2>Employees</h2>
+      <ul class="list">
+        {{#each person in employees itemController="employee_item"}}
+          <li>
+            {{person.fullName}}
+            {{input value=person.department placeholder="Department"}}
+            {{input value=person.jobTitle placeholder="Job Title"}}
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
   </script>
 
   <script type="text/x-handlebars" id="slides/slide15">
@@ -336,18 +352,26 @@ App.Person = FP.Model.extend({
       {{fullName}}
     </p>
 
-    <ul class="list">
-      {{#each company in companies}}
-        <li {{action leaveCompany company}} class="clickable">{{company.name}}</li>
-      {{/each}}
-    </ul>
+    <div class="two-columns">
+      <div class="column">
 
-    <h2>Other Companies</h2>
-    <ul class="list">
-      {{#each company in otherCompanies}}
-        <li {{action joinCompany company}} class="clickable">{{company.name}}</li>
-      {{/each}}
-    </ul>
+        <h2>Companies</h2>
+        <ul class="list">
+          {{#each company in companies}}
+            <li {{action leaveCompany company}} class="clickable">{{company.name}}</li>
+          {{/each}}
+        </ul>
+      </div>
+
+      <div class="column">
+        <h2>Other Companies</h2>
+        <ul class="list">
+          {{#each company in otherCompanies}}
+            <li {{action joinCompany company}} class="clickable">{{company.name}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide16">
@@ -386,11 +410,23 @@ App.Project = FP.Model.extend({
   </script>
 
   <script type="text/x-handlebars" id="slides/slide19">
+  <h1>Thankyou</h1>
+
     <p>
-      <a href="http://github.com/rlivsey/fireplace">http://github.com/rlivsey/fireplace</a>
+      <a href="http://github.com/rlivsey/fireplace">
+        http://github.com/rlivsey/fireplace
+      </a>
     </p>
     <p>
-      <a href="http://livsey.org/fireplace-presentation">http://livsey.org/fireplace-presentation</a>
+      <a href="http://livsey.org/fireplace-presentation">
+        http://livsey.org/fireplace-presentation
+      </a>
+    </p>
+
+    <p>
+      <a href="https://github.com/firebase/emberFire">
+        https://github.com/firebase/emberFire
+      </a>
     </p>
   </script>
 

@@ -38,6 +38,7 @@ button:hover {
   bottom: 0;
   text-align: center;
   padding-top: 1em;
+  overflow: auto;
 }
 
 .controls {
@@ -87,7 +88,7 @@ button:hover {
 }
 
 .focused-json .json pre {
-  width: 50%;
+  width: 75%;
   padding: 3em;
   margin: auto;
   font-size: 1.2em;
@@ -119,7 +120,7 @@ button:hover {
   margin: 1em 0;
   text-align: left;
   font-size: 1.5em;
-  zoom: 1;
+  overflow: hidden;
 }
 
 .code:after {
@@ -179,7 +180,8 @@ ul.list {
 }
 
 ul.list li {
-  width: 30em;
+  width: 90%;
+  max-width: 30em;
   margin: auto;
   padding: 0.5em;
   margin-bottom: 0.25em;
@@ -197,4 +199,17 @@ ul.list input {
   margin-left: 0.5em;
   border-bottom: 1px dotted #34495e;
   background-color: inherit;
+}
+
+p {
+  font-size: 1.5em;
+}
+
+a {
+  color: #FFF;
+}
+
+.two-columns .column {
+  float: left;
+  width: 50%;
 }

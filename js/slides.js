@@ -74,20 +74,26 @@ App.SlidesRoute.reopen({
 App.SlidesSlide7Route = Ember.Route.extend({
   actions: {
     createPerson: function() {
-      var person = this.store.createRecord("person", {
+      this.person = this.store.createRecord("person", {
         firstName: "John",
         lastName: "Watson",
-        dob: new Date(Date.UTC(1852, 7, 7)),
-        addresses: [
-          this.store.createRecord("address", {
-            number: "221B",
-            street: "Baker Street",
-            city: "London",
-            postcode: "NW1 6XE"
-          })
-        ]
+        dob: new Date(Date.UTC(1852, 7, 7))
       });
-      person.save();
+      this.person.save();
+    },
+    addAddress: function() {
+      if (!this.person) {
+        return;
+      }
+      this.person.get("addresses").pushObject(
+        this.store.createRecord("address", {
+          number: "221B",
+          street: "Baker Street",
+          city: "London",
+          postcode: "NW1 6XE"
+        })
+      );
+      this.person.save();
     }
   }
 });
@@ -118,7 +124,7 @@ App.SlidesSlide11Route = Ember.Route.extend({
 
 App.SlidesSlide12Route = Ember.Route.extend({
   model: function() {
-    return this.store.fetch("company", {startAt: "A", endAt: "D"});
+    return this.store.fetch("company", {startAt: "A", endAt: "J"});
   }
 });
 
