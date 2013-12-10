@@ -52,14 +52,6 @@
     }
   }
 }</pre></div></div>
-
-    <ul>
-      <li>child_added</li>
-      <li>child_removed</li>
-      <li>child_changed</li>
-      <li>child_moved</li>
-      <li>value</li>
-    </ul>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide3">
@@ -157,7 +149,7 @@ App.PeopleRoute = Ember.Route.extend({
   }
 });</pre></div></div>
 
-    <ul>
+    <ul class="list">
       {{#each person in controller}}
         <li>
           {{person.firstName}} {{person.lastName}}
@@ -180,7 +172,7 @@ App.PeopleRoute = Ember.Route.extend({
   }
 });</pre></div></div>
 
-    <ul>
+    <ul class="list">
       {{#each person in controller}}
         <li>
           {{person.firstName}} {{person.lastName}}
@@ -203,9 +195,9 @@ person.setProperties({
 });
 person.save();</pre></div></div>
 
-    <ul>
+    <ul class="list">
       {{#each person in controller}}
-        <li {{action updatePerson person}}>
+        <li {{action updatePerson person}} class="clickable">
           {{person.firstName}} {{person.lastName}}
         </li>
       {{/each}}
@@ -225,9 +217,9 @@ App.Company = FP.Model.extend({
   priority: Ember.computed.alias("name")
 });</pre></div></div>
 
-    <ul>
+    <ul class="list">
       {{#each company in controller}}
-        <li {{action updateCompany company}}>
+        <li {{action updateCompany company}} class="clickable">
           {{company.name}}
         </li>
       {{/each}}
@@ -250,7 +242,7 @@ App.CompaniesRoute = Ember.Route.extend({
   }
 });</pre></div></div>
 
-    <ul>
+    <ul class="list">
       {{#each company in controller}}
         <li>
           {{company.name}}
@@ -277,18 +269,18 @@ App.Company = FP.Model.extend({
     </p>
 
     <h2>Employees</h2>
-    <ul>
+    <ul class="list">
       {{#each person in employees}}
-        <li {{action removeEmployee person}}>
+        <li {{action removeEmployee person}} class="clickable">
           {{person.firstName}} {{person.lastName}}
         </li>
       {{/each}}
     </ul>
 
     <h2>Non-Employees</h2>
-    <ul>
+    <ul class="list">
       {{#each person in nonEmployees}}
-        <li {{action addEmployee person}}>
+        <li {{action addEmployee person}} class="clickable">
           {{person.firstName}} {{person.lastName}}
         </li>
       {{/each}}
@@ -317,7 +309,7 @@ App.Employee = FP.MetaModel.extend({
     </p>
 
     <h2>Employees</h2>
-    <ul>
+    <ul class="list">
       {{#each person in employees itemController="employee_item"}}
         <li>
           {{person.firstName}} {{person.lastName}}
@@ -344,16 +336,16 @@ App.Person = FP.Model.extend({
       {{firstName}} {{firstName}}
     </p>
 
-    <ul>
+    <ul class="list">
       {{#each company in companies}}
-        <li {{action leaveCompany company}}>{{company.name}}</li>
+        <li {{action leaveCompany company}} class="clickable">{{company.name}}</li>
       {{/each}}
     </ul>
 
     <h2>Other Companies</h2>
-    <ul>
+    <ul class="list">
       {{#each company in otherCompanies}}
-        <li {{action joinCompany company}}>{{company.name}}</li>
+        <li {{action joinCompany company}} class="clickable">{{company.name}}</li>
       {{/each}}
     </ul>
   </script>

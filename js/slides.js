@@ -125,7 +125,7 @@ App.SlidesSlide12Route = Ember.Route.extend({
 App.SlidesSlide13Controller = Ember.ObjectController.extend({
   people: [],
   nonEmployees: function(){
-    var employeeIDs = this.get("employees").mapBy("id");
+    var employeeIDs = (this.get("employees") || []).mapBy("id");
     return this.get("people").filter(function(item){
       return !employeeIDs.contains(item.get("id"));
     });
@@ -186,7 +186,7 @@ App.SlidesSlide14Route = Ember.Route.extend({
 App.SlidesSlide15Controller = Ember.ObjectController.extend({
   allCompanies: [],
   otherCompanies: function(){
-    var companyIDs = this.get("companies").mapBy("id");
+    var companyIDs = (this.get("companies") || []).mapBy("id");
     return this.get("allCompanies").filter(function(item){
       return !companyIDs.contains(item.get("id"));
     });
