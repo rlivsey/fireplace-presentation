@@ -3,7 +3,7 @@
 
 App = Ember.Application.create();
 
-NUM_SLIDES    = 100;
+NUM_SLIDES    = 19;
 FIREBASE_ROOT = "https://fireplace-presentation.firebaseio.com";
 
 Ember.Handlebars.registerBoundHelper('json', function(json) {

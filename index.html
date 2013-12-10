@@ -94,6 +94,25 @@
   </script>
 
   <script type="text/x-handlebars" id="slides/slide5">
+    <h1>Attributes</h1>
+
+    <div class="code"><div><pre>
+    var attr = FP.attr;
+    App.Person = FP.Model.extend({
+      firstName: attr(),
+      lastName:  attr({key: "surname"}),
+      age:       attr("number"),
+      isAdmin:   attr("boolean", {default: false}),
+
+      dob: attr("date", {default: function() {
+        return new Date();
+      }}),
+
+      logins: attr("hash", {of: "timestamp"})
+    });</pre></div></div>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide6">
     <h1>The Store</h1>
 
     <div class="code"><div><pre>
@@ -102,7 +121,7 @@
     });</pre></div></div>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide6">
+  <script type="text/x-handlebars" id="slides/slide7">
     <h1>Creating Records</h1>
 
     <div class="code"><div><pre>
@@ -127,7 +146,7 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide7">
+  <script type="text/x-handlebars" id="slides/slide8">
     <h1>Finding Records</h1>
 
     <div class="code"><div><pre>
@@ -150,7 +169,7 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide8">
+  <script type="text/x-handlebars" id="slides/slide9">
     <h1>Limiting Records</h1>
 
     <div class="code"><div><pre>
@@ -173,7 +192,7 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide9">
+  <script type="text/x-handlebars" id="slides/slide10">
     <h1>Updating Records</h1>
 
     <div class="code"><div><pre>
@@ -196,12 +215,12 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide10">
+  <script type="text/x-handlebars" id="slides/slide11">
     <h1>Ordering Records</h1>
 
     <div class="code"><div><pre>
       App.Company = FP.Model.extend({
-        name: FP.attr(),
+        name: attr(),
         priority: Ember.computed.alias("name")
       });</pre></div></div>
 
@@ -218,7 +237,7 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide11">
+  <script type="text/x-handlebars" id="slides/slide12">
     <h1>Filtering Records</h1>
 
     <div class="code"><div><pre>
@@ -243,13 +262,13 @@
     </p>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide12">
+  <script type="text/x-handlebars" id="slides/slide13">
     <h1>Non-embedded Relationships</h1>
 
     <div class="code"><div><pre>
       App.Company = FP.Model.extend({
-        name: FP.attr(),
-        employees: FP.hasMany("people", {embedded: false})
+        name: attr(),
+        employees: hasMany("people", {embedded: false})
       });</pre></div></div>
 
     <p>
@@ -275,13 +294,13 @@
     </ul>
   </script>
 
-  <script type="text/x-handlebars" id="slides/slide13">
-    <h1>Non-embedded Relationships</h1>
+  <script type="text/x-handlebars" id="slides/slide14">
+    <h1>Meta Models</h1>
 
     <div class="code"><div><pre>
       App.Company = FP.Model.extend({
-        name: FP.attr(),
-        employees: FP.hasMany("people", {
+        name: attr(),
+        employees: hasMany("people", {
           embedded: false,
           as: "employee"
         })
@@ -308,30 +327,79 @@
     </ul>
   </script>
 
-
-
-  <script type="text/x-handlebars" id="slides/slide99">
-    <h1>Some Text Here</h1>
+  <script type="text/x-handlebars" id="slides/slide15">
+    <h1>Detached Relationships</h1>
 
     <div class="code"><div><pre>
-App.Person = FP.Person.extend({
-  firstName: attr()
-});
-
-App.Person.reopenClass({
-  firebasePath: "projects/&#123;&#123;project.id&#125;&#125;/people"
-});</pre></div></div>
+      App.Person = FP.Model.extend({
+        companies: hasMany({
+          detached: true,
+          embedded: false,
+          path: "employments/&#123;&#123;id&#125;&#125;"
+        })
+      });</pre></div></div>
 
     <p>
-      <button {{action createPerson}}>Save a person</button>
+      {{firstName}} {{firstName}}
     </p>
+
+    <ul>
+      {{#each company in companies}}
+        <li {{action leaveCompany company}}>{{company.name}}</li>
+      {{/each}}
+    </ul>
+
+    <h2>Other Companies</h2>
+    <ul>
+      {{#each company in otherCompanies}}
+        <li {{action joinCompany company}}>{{company.name}}</li>
+      {{/each}}
+    </ul>
   </script>
 
+  <script type="text/x-handlebars" id="slides/slide16">
+    <h1>Customising Firebase References</h1>
 
-  <script type="text/x-handlebars" id="slides/slide100">
+    <div class="code"><div><pre>
+      App.Person.reopenClass({
+        firebasePath: "folk"
+      });</pre></div></div>
+  </script>
 
-    <a href="http://github.com/rlivsey/fireplace">http://github.com/rlivsey/fireplace</a>
+  <script type="text/x-handlebars" id="slides/slide17">
+    <h1>Customising Firebase References</h1>
 
+    <div class="code"><div><pre>
+      App.Person = FP.Model.extend({
+        project: null
+      });
+
+      App.Person.reopenClass({
+        firebasePath: "members/for/&#123;&#123;project.id&#125;&#125;"
+      });
+
+      this.store.fetch("person", {project: someProject}, {limit: 10})
+
+      App.Project = FP.Model.extend({
+        people: hasMany({
+          detached: true,
+          query: function() { return {project: this}; }
+        })
+      });
+      </pre></div></div>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide18">
+    <h1>Ember Inspector &rarr;</h1>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide19">
+    <p>
+      <a href="http://github.com/rlivsey/fireplace">http://github.com/rlivsey/fireplace</a>
+    </p>
+    <p>
+      <a href="http://livsey.org/fireplace-presentation">http://livsey.org/fireplace-presentation</a>
+    </p>
   </script>
 
   <script src='https://cdn.firebase.com/v0/firebase.js'></script>

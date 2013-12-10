@@ -10,7 +10,11 @@ App.Person = FP.Model.extend({
   firstName: attr(),
   lastName:  attr(),
   dob:       attr("date"),
-  addresses: hasMany("address")
+  addresses: hasMany("address"),
+  fullName:  function() {
+    return this.get("firstName") + ' ' + this.get("lastName");
+  }.property("firstName", "lastName"),
+  companies: hasMany({detached: true, embedded: false, path: "employments/{{id}}", as: "employment"})
 });
 
 App.Address = FP.Model.extend({
@@ -31,25 +35,8 @@ App.Employee = FP.MetaModel.extend({
   jobTitle: attr()
 });
 
-App.SlidesSlide6Route = Ember.Route.extend({
-  actions: {
-    createPerson: function() {
-      var person = this.store.createRecord("person", {
-        firstName: "John",
-        lastName: "Watson",
-        dob: new Date(Date.UTC(1852, 7, 7)),
-        addresses: [
-          this.store.createRecord("address", {
-            number: "221B",
-            street: "Baker Street",
-            city: "London",
-            postcode: "NW1 6XE"
-          })
-        ]
-      });
-      person.save();
-    }
-  }
+App.Employment = FP.MetaModel.extend({
+
 });
 
 App.SlidesRoute.reopen({
@@ -82,17 +69,32 @@ App.SlidesRoute.reopen({
       company.save();
     }
   }
-})
+});
 
 App.SlidesSlide7Route = Ember.Route.extend({
-  model: function() {
-    return this.store.fetch("person");
+  actions: {
+    createPerson: function() {
+      var person = this.store.createRecord("person", {
+        firstName: "John",
+        lastName: "Watson",
+        dob: new Date(Date.UTC(1852, 7, 7)),
+        addresses: [
+          this.store.createRecord("address", {
+            number: "221B",
+            street: "Baker Street",
+            city: "London",
+            postcode: "NW1 6XE"
+          })
+        ]
+      });
+      person.save();
+    }
   }
 });
 
 App.SlidesSlide8Route = Ember.Route.extend({
   model: function() {
-    return this.store.fetch("person", {limit: 5});
+    return this.store.fetch("person");
   }
 });
 
@@ -104,17 +106,23 @@ App.SlidesSlide9Route = Ember.Route.extend({
 
 App.SlidesSlide10Route = Ember.Route.extend({
   model: function() {
-    return this.store.fetch("company");
+    return this.store.fetch("person", {limit: 5});
   }
 });
 
 App.SlidesSlide11Route = Ember.Route.extend({
   model: function() {
+    return this.store.fetch("company");
+  }
+});
+
+App.SlidesSlide12Route = Ember.Route.extend({
+  model: function() {
     return this.store.fetch("company", {startAt: "A", endAt: "D"});
   }
 });
 
-App.SlidesSlide12Controller = Ember.ObjectController.extend({
+App.SlidesSlide13Controller = Ember.ObjectController.extend({
   people: [],
   nonEmployees: function(){
     var employeeIDs = this.get("employees").mapBy("id");
@@ -124,7 +132,7 @@ App.SlidesSlide12Controller = Ember.ObjectController.extend({
   }.property("people.[]", "employees.[]")
 });
 
-App.SlidesSlide12Route = Ember.Route.extend({
+App.SlidesSlide13Route = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company", {limit: 1}).then(function(companies){
       return companies.get("firstObject");
@@ -154,7 +162,7 @@ App.SlidesSlide12Route = Ember.Route.extend({
 });
 
 
-App.SlidesSlide13Controller = Ember.ObjectController.extend({
+App.SlidesSlide14Controller = Ember.ObjectController.extend({
 
 });
 
@@ -167,10 +175,54 @@ App.EmployeeItemController = Ember.ObjectController.extend({
   }.observes("department", "jobTitle")
 });
 
-App.SlidesSlide13Route = Ember.Route.extend({
+App.SlidesSlide14Route = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company", {limit: 1}).then(function(companies){
       return companies.get("firstObject");
     });
+  }
+});
+
+App.SlidesSlide15Controller = Ember.ObjectController.extend({
+  allCompanies: [],
+  otherCompanies: function(){
+    var companyIDs = this.get("companies").mapBy("id");
+    return this.get("allCompanies").filter(function(item){
+      return !companyIDs.contains(item.get("id"));
+    });
+  }.property("companies.[]", "allCompanies.[]")
+});
+
+App.SlidesSlide15Route = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("person", {limit: 1}).then(function(people){
+      return people.get("firstObject");
+    });
+  },
+
+  setupController: function(controller, model) {
+    this._super(controller, model);
+    controller.set("allCompanies", this.store.find("company"));
+  },
+
+  actions: {
+    // TODO - shouldn't need a meta model for this
+    // and should handle saving the relationship when Person is saved
+    // instead of saving the employment - will try and fix that before the presentation
+    // so the slides match reality!
+    joinCompany: function(company) {
+      var person = this.controller.get("content");
+      var employment = this.store.createRecord("employment", {content: company});
+      person.get("companies").pushObject(employment);
+      employment.save();
+    },
+
+    leaveCompany: function(company) {
+      var person = this.controller.get("content");
+      var employment = person.get("companies").findBy("id", company.get("id"));
+
+      // just destry the meta model and everything updates itself
+      employment.delete();
+    }
   }
 });
