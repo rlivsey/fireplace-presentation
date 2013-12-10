@@ -3,7 +3,7 @@
 
 App = Ember.Application.create();
 
-NUM_SLIDES    = 10;
+NUM_SLIDES    = 100;
 FIREBASE_ROOT = "https://fireplace-presentation.firebaseio.com";
 
 Ember.Handlebars.registerBoundHelper('json', function(json) {
@@ -28,6 +28,7 @@ App.HomeRoute = Ember.Route.extend({
 App.SlidesController = Ember.Controller.extend({
   needs: "application",
   currentJSON: null,
+  showingJSON: false,
 
   currentSlideNum: function(){
     var path = this.get("controllers.application.currentPath");
@@ -52,6 +53,27 @@ App.SlidesController = Ember.Controller.extend({
 
 });
 
+App.SlidesView = Ember.View.extend({
+  classNames: "slides-container",
+  classNameBindings: "controller.showingJSON",
+
+  setupListeners: function() {
+    var controller = this.controller;
+    $("body").on("keyup", function(e) {
+      console.info(e.keyCode);
+      switch(e.keyCode) {
+        case 37: // left
+          controller.send("previousSlide");
+          break;
+        case 39: // right
+        case 32: // space
+          controller.send("nextSlide");
+          break;
+      }
+    });
+  }.on('didInsertElement')
+});
+
 App.SlidesRoute = Ember.Route.extend({
 
   setupController: function(controller) {
@@ -64,17 +86,25 @@ App.SlidesRoute = Ember.Route.extend({
   actions: {
     nextSlide: function() {
       var next = this.controller.get("nextSlideNum");
-      this.transitionTo("slides.slide"+next);
+      if (next) {
+        this.transitionTo("slides.slide"+next);
+      }
     },
 
     previousSlide: function() {
       var prev = this.controller.get("previousSlideNum");
-      this.transitionTo("slides.slide"+prev);
+      if (prev) {
+        this.transitionTo("slides.slide"+prev);
+      }
     },
 
     clearData: function() {
       fb = new Firebase(FIREBASE_ROOT);
       fb.remove();
+    },
+
+    toggleJSON: function() {
+      this.controller.toggleProperty("showingJSON");
     }
   }
 });

@@ -8,39 +8,235 @@
 </head>
 <body>
   <script type="text/x-handlebars" id="slides">
-    <div>
+    <div class="slide">
+      <button {{action toggleJSON}} class="toggle-json">
+        {{#if showingJSON}}&raquo;{{else}}&laquo;{{/if}}
+      </button>
       {{outlet}}
     </div>
 
-    {{#if previousSlideNum}}
-      <button {{action previousSlide}}>Prev ({{previousSlideNum}})</button>
-    {{/if}}
+    <div class="controls">
+      {{#if previousSlideNum}}
+        <button {{action previousSlide}} class="prev-button control-button">&larr;</button>
+      {{/if}}
 
-    {{currentSlideNum}}
+      <div class="current-slide-num">
+        {{currentSlideNum}}
+      </div>
 
-    {{#if nextSlideNum}}
-      <button {{action nextSlide}}>Next ({{nextSlideNum}})</button>
-    {{/if}}
+      {{#if nextSlideNum}}
+        <button {{action nextSlide}} class="next-button control-button">&rarr;</button>
+      {{/if}}
+    </div>
 
-    <pre>{{json currentJSON}}</pre>
-
-    <button {{action clearData}}>x</button>
+    <div class="json">
+      <pre>{{json currentJSON}}</pre>
+      <button {{action clearData}}>x</button>
+    </div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide1">
-    <button {{action createPerson}}>Save a person</button>
+    <h1>Firebase</h1>
+    <p>&ldquo;Scalable real-time backend&rdquo;</p>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide2">
-    This
+    <h1>Syncronized JSON blob</h1>
+
+    <div class="code"><div><pre>
+    {                   # http://foo.firebaseio.com/
+      "foo": {          # http://foo.firebaseio.com/foo
+        "bar": {        # http://foo.firebaseio.com/foo/bar
+          "baz": 1      # http://foo.firebaseio.com/foo/bar/baz
+        }
+      }
+    }</pre></div></div>
+
+    <ul>
+      <li>child_added</li>
+      <li>child_removed</li>
+      <li>child_changed</li>
+      <li>child_moved</li>
+      <li>value</li>
+    </ul>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide3">
-    IS
+    <h1>EmberFire</h1>
+
+    <div class="code"><div><pre>
+    App.IndexRoute = Ember.Route.extend({
+      model: function() {
+        return EmberFire.Array.create({
+          ref: new Firebase("https://<my-firebase>.firebaseio.com/list")
+        });
+      }
+    });</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide4">
-    A Slide
+    <h1>Fireplace</h1>
+
+    <div class="code"><div><pre>
+    App.Person = FP.Model.extend({
+      firstName: FP.attr(),
+      lastName:  FP.attr(),
+      dob:       FP.attr("date"),
+      addresses: FP.hasMany()
+    });
+
+    App.Address = FP.Model.extend({
+      number:   FP.attr(),
+      street:   FP.attr(),
+      city:     FP.attr(),
+      postcode: FP.attr()
+    });</pre></div></div>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide5">
+    <h1>The Store</h1>
+
+    <div class="code"><div><pre>
+    App.Store = FP.Store.extend({
+      firebaseRoot: "https://your-app.firebase.io"
+    });</pre></div></div>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide6">
+    <h1>Creating Records</h1>
+
+    <div class="code"><div><pre>
+    var person = this.store.createRecord("person", {
+      firstName: "John",
+      lastName: "Watson",
+      dob: new Date(Date.UTC(1852, 7, 7)),
+      addresses: [
+        this.store.createRecord("address", {
+          number: "221B",
+          street: "Baker Street",
+          city: "London",
+          postcode: "NW1 6XE"
+        })
+      ]
+    });
+
+    person.save();</pre></div></div>
+
+    <p>
+      <button {{action createPerson}}>Run</button>
+    </p>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide7">
+    <h1>Finding Records</h1>
+
+    <div class="code"><div><pre>
+    App.PeopleRoute = Ember.Route.extend({
+      model: function() {
+        return this.store.fetch("person");
+      }
+    });</pre></div></div>
+
+    <ul>
+      {{#each person in controller}}
+        <li>
+          {{person.firstName}} {{person.lastName}}
+        </li>
+      {{/each}}
+    </ul>
+
+    <p>
+      <button {{action createRandomPerson}}>Add Person</button>
+    </p>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide8">
+    <h1>Limiting Records</h1>
+
+    <div class="code"><div><pre>
+    App.PeopleRoute = Ember.Route.extend({
+      model: function() {
+        return this.store.fetch("person", {limit: 5});
+      }
+    });</pre></div></div>
+
+    <ul>
+      {{#each person in controller}}
+        <li>
+          {{person.firstName}} {{person.lastName}}
+        </li>
+      {{/each}}
+    </ul>
+
+    <p>
+      <button {{action createRandomPerson}}>Add Person</button>
+    </p>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide9">
+    <h1>Updating Records</h1>
+
+    <div class="code"><div><pre>
+    person.setProperties({
+      firstName: Faker.Name.firstName(),
+      lastName:  Faker.Name.lastName()
+    });
+    person.save();</pre></div></div>
+
+    <ul>
+      {{#each person in controller}}
+        <li {{action updatePerson person}}>
+          {{person.firstName}} {{person.lastName}}
+        </li>
+      {{/each}}
+    </ul>
+  </script>
+
+  <script type="text/x-handlebars" id="slides/slide10">
+    <h1>Ordering Records</h1>
+
+    <div class="code"><div><pre>
+      App.Thing = FP.Model.extend({
+        name: FP.attr(),
+        priority: Ember.computed.alias("name")
+      });</pre></div></div>
+
+    <ul>
+      {{#each thing in controller}}
+        <li>
+          {{thing.name}}
+        </li>
+      {{/each}}
+    </ul>
+
+    <p>
+      <button {{action createThing}}>Add Thing</button>
+    </p>
+  </script>
+
+
+  <script type="text/x-handlebars" id="slides/slide99">
+    <h1>Some Text Here</h1>
+
+    <div class="code"><div><pre>
+App.Person = FP.Person.extend({
+  firstName: attr()
+});
+
+App.Person.reopenClass({
+  firebasePath: "projects/&#123;&#123;project.id&#125;&#125;/people"
+});</pre></div></div>
+
+    <p>
+      <button {{action createPerson}}>Save a person</button>
+    </p>
+  </script>
+
+
+  <script type="text/x-handlebars" id="slides/slide100">
+
+    <a href="http://github.com/rlivsey/fireplace">http://github.com/rlivsey/fireplace</a>
+
   </script>
 
   <script src='https://cdn.firebase.com/v0/firebase.js'></script>
@@ -49,6 +245,7 @@
   <script src="js/libs/ember-1.2.0.js"></script>
   <script src="js/libs/ember-inflector.js"></script>
   <script src="js/libs/fireplace.js"></script>
+  <script src="js/libs/faker.js"></script>
   <script src="js/app.js"></script>
   <script src="js/slides.js"></script>
 </body>
