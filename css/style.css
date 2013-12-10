@@ -173,6 +173,10 @@ h1 {
   font-size: 3em;
 }
 
+h2 {
+  margin-top: 0;
+}
+
 ul.list {
   list-style-type: none;
   padding: 0;
@@ -212,4 +216,27 @@ a {
 .two-columns .column {
   float: left;
   width: 50%;
+}
+
+
+.popover {
+  position: relative;
+}
+
+.popover .popover-options {
+  background-color: #2980b9;
+  position: absolute;
+
+  width: 20em;
+  left: 50%;
+  margin-left: -10em;
+
+  padding: 0.25em;
+
+  z-index: 1000;
+}
+
+.popover ul.list li {
+  width: 100%;
+  max-width: 100%;
 }

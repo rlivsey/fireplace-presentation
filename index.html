@@ -264,6 +264,23 @@ App.CompaniesRoute = Ember.Route.extend({
     </p>
   </script>
 
+  <script type="text/x-handlebars" id="companies-selector">
+    <div class="popover">
+      <p class="popover-anchor" {{action showPopover}}>
+        {{currentCompany.name}}
+      </p>
+      {{#if showingPopover}}
+        <ul class="popover-options list">
+          {{#each company in controller}}
+            <li {{action selectCompany company}}>
+              {{company.name}}
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
+  </script>
+
   <script type="text/x-handlebars" id="slides/slide13">
     <h1>Non-embedded Relationships</h1>
 
@@ -273,9 +290,7 @@ App.Company = FP.Model.extend({
   employees: hasMany("people", {embedded: false})
 });</pre></div></div>
 
-    <p>
-      {{name}}
-    </p>
+    {{partial "companies-selector"}}
 
     <div class="two-columns">
       <div class="column">
@@ -318,12 +333,9 @@ App.Employee = FP.MetaModel.extend({
   jobTitle: attr()
 });</pre></div></div>
 
-    <p>
-      {{name}}
-    </p>
+    {{partial "companies-selector"}}
 
     {{#if employees}}
-      <h2>Employees</h2>
       <ul class="list">
         {{#each person in employees itemController="employee_item"}}
           <li>
@@ -334,6 +346,23 @@ App.Employee = FP.MetaModel.extend({
         {{/each}}
       </ul>
     {{/if}}
+  </script>
+
+  <script type="text/x-handlebars" id="people-selector">
+    <div class="popover">
+      <p class="popover-anchor" {{action showPopover}}>
+        {{currentPerson.fullName}}
+      </p>
+      {{#if showingPopover}}
+        <ul class="popover-options list">
+          {{#each person in controller}}
+            <li {{action selectPerson person}}>
+              {{person.fullName}}
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide15">
@@ -348,9 +377,7 @@ App.Person = FP.Model.extend({
   })
 });</pre></div></div>
 
-    <p>
-      {{fullName}}
-    </p>
+    {{partial "people-selector"}}
 
     <div class="two-columns">
       <div class="column">

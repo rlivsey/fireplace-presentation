@@ -128,21 +128,34 @@ App.SlidesSlide12Route = Ember.Route.extend({
   }
 });
 
-App.SlidesSlide13Controller = Ember.ObjectController.extend({
+App.CompaniesController = Ember.ArrayController.extend({
+  currentCompany: Ember.computed.alias("firstObject"),
+  employees: Ember.computed.alias("currentCompany.employees"),
   people: [],
   nonEmployees: function(){
     var employeeIDs = (this.get("employees") || []).mapBy("id");
     return this.get("people").filter(function(item){
       return !employeeIDs.contains(item.get("id"));
     });
-  }.property("people.[]", "employees.[]")
+  }.property("people.[]", "employees.[]"),
+
+  actions: {
+    selectCompany: function(company) {
+      this.set("currentCompany", company);
+      this.set("showingPopover", false);
+    },
+
+    showPopover: function() {
+      this.toggleProperty("showingPopover");
+    }
+  }
 });
 
 App.SlidesSlide13Route = Ember.Route.extend({
+  controllerName: "companies",
+
   model: function() {
-    return this.store.fetch("company", {limit: 1}).then(function(companies){
-      return companies.get("firstObject");
-    });
+    return this.store.fetch("company");
   },
 
   setupController: function(controller, model) {
@@ -152,14 +165,14 @@ App.SlidesSlide13Route = Ember.Route.extend({
 
   actions: {
     addEmployee: function(person) {
-      var company = this.controller.get("content");
+      var company = this.controller.get("currentCompany");
       var employee = this.store.createRecord("employee", {content: person});
       company.get("employees").pushObject(employee);
       company.save();
     },
 
     removeEmployee: function(person) {
-      var company  = this.controller.get("content");
+      var company  = this.controller.get("currentCompany");
       var employee = company.get("employees").findBy("id", person.get("id"));
       company.get("employees").removeObject(employee);
       company.save();
@@ -167,10 +180,6 @@ App.SlidesSlide13Route = Ember.Route.extend({
   }
 });
 
-
-App.SlidesSlide14Controller = Ember.ObjectController.extend({
-
-});
 
 App.EmployeeItemController = Ember.ObjectController.extend({
   detailsChanged: function() {
@@ -182,28 +191,39 @@ App.EmployeeItemController = Ember.ObjectController.extend({
 });
 
 App.SlidesSlide14Route = Ember.Route.extend({
+  controllerName: "companies",
   model: function() {
-    return this.store.fetch("company", {limit: 1}).then(function(companies){
-      return companies.get("firstObject");
-    });
+    return this.store.fetch("company");
   }
 });
 
-App.SlidesSlide15Controller = Ember.ObjectController.extend({
+App.PeopleController = Ember.ArrayController.extend({
+  currentPerson: Ember.computed.alias("firstObject"),
+  companies: Ember.computed.alias("currentPerson.companies"),
   allCompanies: [],
   otherCompanies: function(){
     var companyIDs = (this.get("companies") || []).mapBy("id");
     return this.get("allCompanies").filter(function(item){
       return !companyIDs.contains(item.get("id"));
     });
-  }.property("companies.[]", "allCompanies.[]")
+  }.property("companies.[]", "allCompanies.[]"),
+
+  actions: {
+    selectPerson: function(person) {
+      this.set("currentPerson", person);
+      this.set("showingPopover", false);
+    },
+
+    showPopover: function() {
+      this.toggleProperty("showingPopover");
+    }
+  }
 });
 
 App.SlidesSlide15Route = Ember.Route.extend({
+  controllerName: "people",
   model: function() {
-    return this.store.fetch("person", {limit: 1}).then(function(people){
-      return people.get("firstObject");
-    });
+    return this.store.fetch("person");
   },
 
   setupController: function(controller, model) {
@@ -217,14 +237,14 @@ App.SlidesSlide15Route = Ember.Route.extend({
     // instead of saving the employment - will try and fix that before the presentation
     // so the slides match reality!
     joinCompany: function(company) {
-      var person = this.controller.get("content");
+      var person = this.controller.get("currentPerson");
       var employment = this.store.createRecord("employment", {content: company});
       person.get("companies").pushObject(employment);
       employment.save();
     },
 
     leaveCompany: function(company) {
-      var person = this.controller.get("content");
+      var person = this.controller.get("currentPerson");
       var employment = person.get("companies").findBy("id", company.get("id"));
 
       // just destry the meta model and everything updates itself
