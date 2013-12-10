@@ -44,13 +44,13 @@
     <h1>Syncronized JSON blob</h1>
 
     <div class="code"><div><pre>
-    {                   # http://foo.firebaseio.com/
-      "foo": {          # http://foo.firebaseio.com/foo
-        "bar": {        # http://foo.firebaseio.com/foo/bar
-          "baz": 1      # http://foo.firebaseio.com/foo/bar/baz
-        }
-      }
-    }</pre></div></div>
+{              => foo.firebaseio.com
+  "foo": {     => foo.firebaseio.com/foo
+    "bar": {   => foo.firebaseio.com/foo/bar
+      "baz": 1 => foo.firebaseio.com/foo/bar/baz
+    }
+  }
+}</pre></div></div>
 
     <ul>
       <li>child_added</li>
@@ -65,81 +65,81 @@
     <h1>EmberFire</h1>
 
     <div class="code"><div><pre>
-    App.IndexRoute = Ember.Route.extend({
-      model: function() {
-        return EmberFire.Array.create({
-          ref: new Firebase("https://<my-firebase>.firebaseio.com/list")
-        });
-      }
-    });</pre></div></div>
+App.IndexRoute = Ember.Route.extend({
+  model: function() {
+    return EmberFire.Array.create({
+      ref: new Firebase("https://<my-firebase>.firebaseio.com/list")
+    });
+  }
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide4">
     <h1>Fireplace</h1>
 
     <div class="code"><div><pre>
-    App.Person = FP.Model.extend({
-      firstName: FP.attr(),
-      lastName:  FP.attr(),
-      dob:       FP.attr("date"),
-      addresses: FP.hasMany()
-    });
+App.Person = FP.Model.extend({
+  firstName: FP.attr(),
+  lastName:  FP.attr(),
+  dob:       FP.attr("date"),
+  addresses: FP.hasMany()
+});
 
-    App.Address = FP.Model.extend({
-      number:   FP.attr(),
-      street:   FP.attr(),
-      city:     FP.attr(),
-      postcode: FP.attr()
-    });</pre></div></div>
+App.Address = FP.Model.extend({
+  number:   FP.attr(),
+  street:   FP.attr(),
+  city:     FP.attr(),
+  postcode: FP.attr()
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide5">
     <h1>Attributes</h1>
 
     <div class="code"><div><pre>
-    var attr = FP.attr;
-    App.Person = FP.Model.extend({
-      firstName: attr(),
-      lastName:  attr({key: "surname"}),
-      age:       attr("number"),
-      isAdmin:   attr("boolean", {default: false}),
+var attr = FP.attr;
+App.Person = FP.Model.extend({
+  firstName: attr(),
+  lastName:  attr({key: "surname"}),
+  age:       attr("number"),
+  isAdmin:   attr("boolean", {default: false}),
 
-      dob: attr("date", {default: function() {
-        return new Date();
-      }}),
+  dob: attr("date", {default: function() {
+    return new Date();
+  }}),
 
-      logins: attr("hash", {of: "timestamp"})
-    });</pre></div></div>
+  logins: attr("hash", {of: "timestamp"})
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide6">
     <h1>The Store</h1>
 
     <div class="code"><div><pre>
-    App.Store = FP.Store.extend({
-      firebaseRoot: "https://your-app.firebase.io"
-    });</pre></div></div>
+App.Store = FP.Store.extend({
+  firebaseRoot: "https://your-app.firebase.io"
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide7">
     <h1>Creating Records</h1>
 
     <div class="code"><div><pre>
-    var person = this.store.createRecord("person", {
-      firstName: "John",
-      lastName: "Watson",
-      dob: new Date(Date.UTC(1852, 7, 7)),
-      addresses: [
-        this.store.createRecord("address", {
-          number: "221B",
-          street: "Baker Street",
-          city: "London",
-          postcode: "NW1 6XE"
-        })
-      ]
-    });
+var person = this.store.createRecord("person", {
+  firstName: "John",
+  lastName: "Watson",
+  dob: new Date(Date.UTC(1852, 7, 7)),
+  addresses: [
+    this.store.createRecord("address", {
+      number: "221B",
+      street: "Baker Street",
+      city: "London",
+      postcode: "NW1 6XE"
+    })
+  ]
+});
 
-    person.save();</pre></div></div>
+person.save();</pre></div></div>
 
     <p>
       <button {{action createPerson}}>Run</button>
@@ -150,11 +150,11 @@
     <h1>Finding Records</h1>
 
     <div class="code"><div><pre>
-    App.PeopleRoute = Ember.Route.extend({
-      model: function() {
-        return this.store.fetch("person");
-      }
-    });</pre></div></div>
+App.PeopleRoute = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("person");
+  }
+});</pre></div></div>
 
     <ul>
       {{#each person in controller}}
@@ -173,11 +173,11 @@
     <h1>Limiting Records</h1>
 
     <div class="code"><div><pre>
-    App.PeopleRoute = Ember.Route.extend({
-      model: function() {
-        return this.store.fetch("person", {limit: 5});
-      }
-    });</pre></div></div>
+App.PeopleRoute = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("person", {limit: 5});
+  }
+});</pre></div></div>
 
     <ul>
       {{#each person in controller}}
@@ -196,11 +196,11 @@
     <h1>Updating Records</h1>
 
     <div class="code"><div><pre>
-    person.setProperties({
-      firstName: Faker.Name.firstName(),
-      lastName:  Faker.Name.lastName()
-    });
-    person.save();</pre></div></div>
+person.setProperties({
+  firstName: Faker.Name.firstName(),
+  lastName:  Faker.Name.lastName()
+});
+person.save();</pre></div></div>
 
     <ul>
       {{#each person in controller}}
@@ -219,10 +219,10 @@
     <h1>Ordering Records</h1>
 
     <div class="code"><div><pre>
-      App.Company = FP.Model.extend({
-        name: attr(),
-        priority: Ember.computed.alias("name")
-      });</pre></div></div>
+App.Company = FP.Model.extend({
+  name: attr(),
+  priority: Ember.computed.alias("name")
+});</pre></div></div>
 
     <ul>
       {{#each company in controller}}
@@ -241,13 +241,13 @@
     <h1>Filtering Records</h1>
 
     <div class="code"><div><pre>
-    App.CompaniesRoute = Ember.Route.extend({
-      model: function() {
-        return this.store.fetch("company", {
-          startAt: "A", endAt: "D"
-        });
-      }
-    });</pre></div></div>
+App.CompaniesRoute = Ember.Route.extend({
+  model: function() {
+    return this.store.fetch("company", {
+      startAt: "A", endAt: "D"
+    });
+  }
+});</pre></div></div>
 
     <ul>
       {{#each company in controller}}
@@ -266,10 +266,10 @@
     <h1>Non-embedded Relationships</h1>
 
     <div class="code"><div><pre>
-      App.Company = FP.Model.extend({
-        name: attr(),
-        employees: hasMany("people", {embedded: false})
-      });</pre></div></div>
+App.Company = FP.Model.extend({
+  name: attr(),
+  employees: hasMany("people", {embedded: false})
+});</pre></div></div>
 
     <p>
       {{name}}
@@ -298,18 +298,18 @@
     <h1>Meta Models</h1>
 
     <div class="code"><div><pre>
-      App.Company = FP.Model.extend({
-        name: attr(),
-        employees: hasMany("people", {
-          embedded: false,
-          as: "employee"
-        })
-      });
+App.Company = FP.Model.extend({
+  name: attr(),
+  employees: hasMany("people", {
+    embedded: false,
+    as: "employee"
+  })
+});
 
-      App.Employee = FP.MetaModel.extend({
-        department: attr(),
-        jobTitle: attr()
-      });</pre></div></div>
+App.Employee = FP.MetaModel.extend({
+  department: attr(),
+  jobTitle: attr()
+});</pre></div></div>
 
     <p>
       {{name}}
@@ -331,13 +331,13 @@
     <h1>Detached Relationships</h1>
 
     <div class="code"><div><pre>
-      App.Person = FP.Model.extend({
-        companies: hasMany({
-          detached: true,
-          embedded: false,
-          path: "employments/&#123;&#123;id&#125;&#125;"
-        })
-      });</pre></div></div>
+App.Person = FP.Model.extend({
+  companies: hasMany({
+    detached: true,
+    embedded: false,
+    path: "employments/&#123;&#123;id&#125;&#125;"
+  })
+});</pre></div></div>
 
     <p>
       {{firstName}} {{firstName}}
@@ -361,32 +361,31 @@
     <h1>Customising Firebase References</h1>
 
     <div class="code"><div><pre>
-      App.Person.reopenClass({
-        firebasePath: "folk"
-      });</pre></div></div>
+App.Person.reopenClass({
+  firebasePath: "folk"
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide17">
     <h1>Customising Firebase References</h1>
 
     <div class="code"><div><pre>
-      App.Person = FP.Model.extend({
-        project: null
-      });
+App.Person = FP.Model.extend({
+  project: null
+});
 
-      App.Person.reopenClass({
-        firebasePath: "members/for/&#123;&#123;project.id&#125;&#125;"
-      });
+App.Person.reopenClass({
+  firebasePath: "members/for/&#123;&#123;project.id&#125;&#125;"
+});
 
-      this.store.fetch("person", {project: someProject}, {limit: 10})
+this.store.fetch("person", {project: someProject}, {limit: 10})
 
-      App.Project = FP.Model.extend({
-        people: hasMany({
-          detached: true,
-          query: function() { return {project: this}; }
-        })
-      });
-      </pre></div></div>
+App.Project = FP.Model.extend({
+  people: hasMany({
+    detached: true,
+    query: function() { return {project: this}; }
+  })
+});</pre></div></div>
   </script>
 
   <script type="text/x-handlebars" id="slides/slide18">
