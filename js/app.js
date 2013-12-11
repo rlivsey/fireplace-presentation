@@ -33,6 +33,16 @@ Ember.Handlebars.registerBoundHelper('json', function(json) {
   return JSON.stringify(json, null, 2);
 });
 
+// stolen from Ember.String.humanize which is coming soon...
+Ember.Handlebars.registerBoundHelper('humanize', function(str) {
+  str = str || "";
+  return str.replace(/_/g, ' ').
+    replace(/^\w/g, function(s){
+      return s.toUpperCase();
+    });
+});
+
+
 App.Router.map(function() {
   this.resource("home", {path: "/"});
   this.resource("slides", {path: "/slides"}, function() {

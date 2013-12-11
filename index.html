@@ -28,9 +28,9 @@
 
   <script type="text/x-handlebars" id="control">
     <div class="controls">
-      <button {{action previousSlide}} class="prev-button control-button">&larr; {{previousSlideName}}</button>
-      <p class="current">{{currentSlide}}</p>
-      <button {{action nextSlide}} class="next-button control-button">{{nextSlideName}} &rarr;</button>
+      <button {{action previousSlide}} class="prev-button control-button">&larr; {{humanize previousSlideName}}</button>
+      <p class="current">{{humanize currentSlide}}</p>
+      <button {{action nextSlide}} class="next-button control-button">{{humanize nextSlideName}} &rarr;</button>
     </div>
   </script>
 
