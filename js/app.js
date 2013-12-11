@@ -3,7 +3,7 @@
 
 App = Ember.Application.create();
 
-FIREBASE_ROOT = "https://fireplace-presentation.firebaseio.com";
+FIREBASE_DEMO_ROOT = "https://fireplace-presentation.firebaseio.com/demo";
 
 SLIDES = [
   'intro',
@@ -40,6 +40,7 @@ App.Router.map(function() {
       this.route(SLIDES[i]);
     }
   });
+  this.route("control");
 });
 
 App.HomeRoute = Ember.Route.extend({
@@ -48,17 +49,61 @@ App.HomeRoute = Ember.Route.extend({
   }
 });
 
+App.ControlRoute = Ember.Route.extend({
+  controllerName: "slides",
+
+  actions: {
+    currentSlideChanged: function(slide) {
+      this.controller.set("currentSlide", slide);
+    },
+
+    nextSlide: function() {
+      var next = this.controller.get("nextSlideName");
+      if (next) {
+        this.controller.currentRef.set(next);
+      }
+    },
+
+    previousSlide: function() {
+      var prev = this.controller.get("previousSlideName");
+      if (prev) {
+        this.controller.currentRef.set(prev);
+      }
+    }
+  }
+});
+
 App.SlidesController = Ember.Controller.extend({
   needs: "application",
   currentJSON: null,
   showingJSON: false,
+  locked: false,
+  currentSlide: null,
 
-  currentSlideNum: function(){
-    var path  = this.get("controllers.application.currentPath");
-    var parts = path.split(".");
-    var current = parts[parts.length-1];
-    return SLIDES.indexOf(current);
-  }.property("controllers.application.currentPath"),
+  observeCurrent: function(){
+    var _this = this;
+    this.currentRef = new Firebase(FIREBASE_DEMO_ROOT).parent().child("current_slide");
+    this.currentRef.on("value", function(snap) {
+      Ember.run(function(){
+        _this.send("currentSlideChanged", snap.val());
+      });
+    });
+  }.on("init"),
+
+  slideDidChange: function() {
+    if (!this.get("locked")) {
+      return;
+    }
+
+    var current = this.get("currentSlideNum");
+    if (current) {
+      this.currentRef.set(SLIDES[current]);
+    }
+  }.observes("currentSlideNum"),
+
+  currentSlideNum: function() {
+    return SLIDES.indexOf(this.get("currentSlide"));
+  }.property("currentSlide"),
 
   nextSlideName: function() {
     var next = this.get("currentSlideNum") + 1;
@@ -95,19 +140,39 @@ App.SlidesView = Ember.View.extend({
           break;
       }
     });
-  }.on('didInsertElement')
+  }.on('didInsertElement'),
+
+  teardownListeners: function() {
+    $("body").off("keyup");
+  }.on("willDestroyElement")
 });
 
 App.SlidesRoute = Ember.Route.extend({
 
   setupController: function(controller) {
-    var fb = new Firebase(FIREBASE_ROOT);
+    var fb = new Firebase(FIREBASE_DEMO_ROOT);
     fb.on("value", function(snap) {
       controller.set("currentJSON", snap.val());
     });
   },
 
   actions: {
+    didTransition: function() {
+      // application route isn't set yet...
+      Ember.run.next(this, function() {
+        var path    = this.controllerFor("application").get("currentPath");
+        var parts   = path.split(".");
+        var current = parts[parts.length-1];
+        this.controller.set("currentSlide", current);
+      });
+    },
+
+    currentSlideChanged: function(slide) {
+      if (this.controller.get("locked")) {
+        this.transitionTo("slides."+slide);
+      }
+    },
+
     nextSlide: function() {
       var next = this.controller.get("nextSlideName");
       if (next) {
@@ -123,7 +188,7 @@ App.SlidesRoute = Ember.Route.extend({
     },
 
     clearData: function() {
-      fb = new Firebase(FIREBASE_ROOT);
+      fb = new Firebase(FIREBASE_DEMO_ROOT);
       fb.remove();
     },
 
@@ -133,6 +198,10 @@ App.SlidesRoute = Ember.Route.extend({
 
     focusJSON: function() {
       this.controller.toggleProperty("focusedJSON");
+    },
+
+    lockSlide: function() {
+      this.controller.toggleProperty("locked");
     }
   }
 });

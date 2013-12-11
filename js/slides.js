@@ -3,7 +3,7 @@ var attr    = FP.attr,
     hasMany = FP.hasMany;
 
 App.Store = FP.Store.extend({
-  firebaseRoot: FIREBASE_ROOT
+  firebaseRoot: FIREBASE_DEMO_ROOT
 });
 
 App.Person = FP.Model.extend({
@@ -62,11 +62,6 @@ App.SlidesRoute.reopen({
         name: Faker.Company.companyName()
       });
       company.save();
-    },
-
-    updateCompany: function(company) {
-      company.set("name", Faker.Company.companyName());
-      company.save();
     }
   }
 });
@@ -119,6 +114,13 @@ App.SlidesUpdatingRoute = Ember.Route.extend({
 App.SlidesOrderingRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company");
+  },
+
+  actions: {
+    updateCompany: function(company) {
+      company.set("name", Faker.Company.companyName());
+      company.save();
+    }
   }
 });
 

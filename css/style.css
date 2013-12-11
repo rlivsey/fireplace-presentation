@@ -41,23 +41,24 @@ button:hover {
   overflow: auto;
 }
 
-.controls {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  text-align: center;
-  padding: 1em;
-}
-
 .toggle-json {
   position: absolute;
   top: 1em;
   right: 1em;
 }
 
-.json, .json pre, .slide, .controls {
+.lock-slide {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  opacity: 0.1;
+}
+
+.lock-slide:hover {
+  opacity: 1;
+}
+
+.json, .json pre, .slide {
   transition: all 0.3s ease;
 }
 
@@ -75,11 +76,11 @@ button:hover {
   -webkit-transform: translateX(0);
 }
 
-.showing-json .slide, .showing-json .controls {
+.showing-json .slide {
   right: 30%;
 }
 
-.focused-json .slide, .showing-json .controls {
+.focused-json .slide {
 
 }
 
@@ -95,24 +96,6 @@ button:hover {
 }
 
 /* styling */
-
-
-.control-button {
-
-}
-
-.next-button {
-  float: right;
-}
-
-.prev-button {
-  float: left;
-}
-
-.current-slide-num {
-  padding: 10px;
-  display: inline-block;
-}
 
 .code {
   background-color: #34495e;
@@ -243,4 +226,16 @@ a {
 .popover ul.list li {
   width: 100%;
   max-width: 100%;
+}
+
+
+/* controls screen */
+
+.controls {
+  text-align: center;
+}
+
+.controls button {
+  display: block;
+  width: 100%;
 }
