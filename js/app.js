@@ -3,8 +3,29 @@
 
 App = Ember.Application.create();
 
-NUM_SLIDES    = 19;
 FIREBASE_ROOT = "https://fireplace-presentation.firebaseio.com";
+
+SLIDES = [
+  'intro',
+  'firebase',
+  'ember_fire',
+  'fireplace',
+  'attributes',
+  'store',
+  'creating',
+  'finding',
+  'limiting',
+  'updating',
+  'ordering',
+  'filtering',
+  'non_embedded',
+  'meta',
+  'detached',
+  'references_basic',
+  'references_advanced',
+  'inspector',
+  'thanks'
+];
 
 Ember.Handlebars.registerBoundHelper('json', function(json) {
   return JSON.stringify(json, null, 2);
@@ -13,15 +34,15 @@ Ember.Handlebars.registerBoundHelper('json', function(json) {
 App.Router.map(function() {
   this.resource("home", {path: "/"});
   this.resource("slides", {path: "/slides"}, function() {
-    for (var i=1; i<=NUM_SLIDES; i++) {
-      this.route("slide"+i);
+    for (var i=0; i<SLIDES.length; i++) {
+      this.route(SLIDES[i]);
     }
   });
 });
 
 App.HomeRoute = Ember.Route.extend({
   redirect: function() {
-    this.transitionTo("slides.slide1");
+    this.transitionTo("slides."+SLIDES[0]);
   }
 });
 
@@ -31,24 +52,20 @@ App.SlidesController = Ember.Controller.extend({
   showingJSON: false,
 
   currentSlideNum: function(){
-    var path = this.get("controllers.application.currentPath");
-    return Number(path.replace(/\D/g, ''));
+    var path  = this.get("controllers.application.currentPath");
+    var parts = path.split(".");
+    var current = parts[parts.length-1];
+    return SLIDES.indexOf(current);
   }.property("controllers.application.currentPath"),
 
-  nextSlideNum: function() {
+  nextSlideName: function() {
     var next = this.get("currentSlideNum") + 1;
-    if (next > NUM_SLIDES) {
-      return;
-    }
-    return next;
+    return SLIDES[next];
   }.property("currentSlideNum"),
 
-  previousSlideNum: function() {
+  previousSlideName: function() {
     var prev = this.get("currentSlideNum") - 1;
-    if (prev <= 0) {
-      return;
-    }
-    return prev;
+    return SLIDES[prev];
   }.property("currentSlideNum")
 
 });
@@ -90,16 +107,16 @@ App.SlidesRoute = Ember.Route.extend({
 
   actions: {
     nextSlide: function() {
-      var next = this.controller.get("nextSlideNum");
+      var next = this.controller.get("nextSlideName");
       if (next) {
-        this.transitionTo("slides.slide"+next);
+        this.transitionTo("slides."+next);
       }
     },
 
     previousSlide: function() {
-      var prev = this.controller.get("previousSlideNum");
+      var prev = this.controller.get("previousSlideName");
       if (prev) {
-        this.transitionTo("slides.slide"+prev);
+        this.transitionTo("slides."+prev);
       }
     },
 

@@ -71,7 +71,7 @@ App.SlidesRoute.reopen({
   }
 });
 
-App.SlidesSlide7Route = Ember.Route.extend({
+App.SlidesCreatingRoute = Ember.Route.extend({
   actions: {
     createPerson: function() {
       this.person = this.store.createRecord("person", {
@@ -98,31 +98,31 @@ App.SlidesSlide7Route = Ember.Route.extend({
   }
 });
 
-App.SlidesSlide8Route = Ember.Route.extend({
+App.SlidesFindingRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("person");
   }
 });
 
-App.SlidesSlide9Route = Ember.Route.extend({
+App.SlidesLimitingRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("person", {limit: 5});
   }
 });
 
-App.SlidesSlide10Route = Ember.Route.extend({
+App.SlidesUpdatingRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("person", {limit: 5});
   }
 });
 
-App.SlidesSlide11Route = Ember.Route.extend({
+App.SlidesOrderingRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company");
   }
 });
 
-App.SlidesSlide12Route = Ember.Route.extend({
+App.SlidesFilteringRoute = Ember.Route.extend({
   model: function() {
     return this.store.fetch("company", {startAt: "A", endAt: "J"});
   }
@@ -151,7 +151,7 @@ App.CompaniesController = Ember.ArrayController.extend({
   }
 });
 
-App.SlidesSlide13Route = Ember.Route.extend({
+App.SlidesNonEmbeddedRoute = Ember.Route.extend({
   controllerName: "companies",
 
   model: function() {
@@ -190,7 +190,7 @@ App.EmployeeItemController = Ember.ObjectController.extend({
   }.observes("department", "jobTitle")
 });
 
-App.SlidesSlide14Route = Ember.Route.extend({
+App.SlidesMetaRoute = Ember.Route.extend({
   controllerName: "companies",
   model: function() {
     return this.store.fetch("company");
@@ -220,7 +220,7 @@ App.PeopleController = Ember.ArrayController.extend({
   }
 });
 
-App.SlidesSlide15Route = Ember.Route.extend({
+App.SlidesDetachedRoute = Ember.Route.extend({
   controllerName: "people",
   model: function() {
     return this.store.fetch("person");
