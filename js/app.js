@@ -105,11 +105,11 @@ App.SlidesController = Ember.Controller.extend({
       return;
     }
 
-    var current = this.get("currentSlideNum");
+    var current = this.get("currentSlide");
     if (current) {
-      this.currentRef.set(SLIDES[current]);
+      this.currentRef.set(current);
     }
-  }.observes("currentSlideNum"),
+  }.observes("currentSlide"),
 
   currentSlideNum: function() {
     return SLIDES.indexOf(this.get("currentSlide"));
