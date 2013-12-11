@@ -57,16 +57,86 @@
 }</pre></div></div>
   </script>
 
+  <script type="text/x-handlebars" id="slides/using_firebase">
+    <h1>Using Firebase</h1>
+
+    <div class="code small"><div><pre>
+var ref = new Firebase("https://foo.firebaseio.com/things");
+var items = [];
+
+ref.on('child_added', function(snapshot){
+  var item = snapshot.val();
+  item.id = snapshot.name();
+  items.push(item);
+});
+
+ref.on('child_changed', function(snapshot){
+  var id = snapshot.name();
+  for (var i=0; i&lt;items.length; i++) {
+    if (items[0].id === id) {
+      items[id] = snapshot.val();
+      return;
+    }
+  }
+});
+
+ref.on('child_removed', function(snapshot){
+  var id = snapshot.name();
+  for (var i=0; i&lt;items.length; i++) {
+    if (items[0].id === id) {
+      items = items.splice(i, 1);
+      return;
+    }
+  }
+});
+
+...</pre></div></div>
+
+  </script>
+
+  <script type="text/x-handlebars" id="slides/using_firebase_with_ember">
+    <h1>Integrating With Ember</h1>
+
+        <div class="code small"><div><pre>
+var ref = new Firebase("https://foo.firebaseio.com/things");
+var items = Ember.Array.create();
+
+ref.on('child_added', function(snapshot){
+  Ember.run(function() {
+    var obj = App.Thing.create(snapshot.val());
+    obj.set("id", snapshot.name());
+    items.pushObject(obj);
+  });
+});
+
+ref.on('child_changed', function(snapshot){
+  Ember.run(function() {
+    var item = items.findBy("id", snapshot.name());
+    item.setProperties(snapshot.val());
+  });
+});
+
+ref.on('child_removed', function(snapshot){
+  Ember.run(function() {
+    var item = items.findBy("id", snapshot.name());
+    items.removeObject(item);
+  });
+});
+
+...</pre></div></div>
+
+  </script>
+
   <script type="text/x-handlebars" id="slides/ember_fire">
     <h1>EmberFire</h1>
 
     <div class="code"><div><pre>
 EmberFire.Array.create({
-  ref: new Firebase("https://your-app.firebaseio.com/list")
+  ref: new Firebase("https://foo.firebaseio.com/list")
 });
 
 EmberFire.Object.create({
-  ref: new Firebase("https://your-app.firebaseio.com/item")
+  ref: new Firebase("https://foo.firebaseio.com/item")
 });</pre></div></div>
 
     <p>

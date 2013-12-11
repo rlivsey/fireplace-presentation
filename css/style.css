@@ -123,6 +123,10 @@ button:hover {
   overflow: hidden;
 }
 
+.code.small {
+  font-size: 1em;
+}
+
 .code:after {
   content: "";
   display: table;

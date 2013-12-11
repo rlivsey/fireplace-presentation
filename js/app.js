@@ -8,6 +8,8 @@ FIREBASE_ROOT = "https://fireplace-presentation.firebaseio.com";
 SLIDES = [
   'intro',
   'firebase',
+  'using_firebase',
+  'using_firebase_with_ember',
   'ember_fire',
   'fireplace',
   'attributes',
