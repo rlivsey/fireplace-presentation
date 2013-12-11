@@ -157,13 +157,13 @@ button:hover {
   overflow: auto;
 }
 
-.json .clear-json {
+.json .focus-json {
   position: fixed;
   top: 1em;
   right: 1em;
 }
 
-.json .focus-json {
+.json .clear-json {
   position: fixed;
   bottom: 1em;
   right: 1em;
