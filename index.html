@@ -361,7 +361,10 @@ App.CompaniesRoute = Ember.Route.extend({
 App.Company = FP.Model.extend({
   name: attr(),
   employees: hasMany("people", {embedded: false})
-});</pre></div></div>
+});
+
+company.get("employees").pushObject(person);
+company.save();</pre></div></div>
 
     {{partial "companies-selector"}}
 
@@ -479,7 +482,7 @@ App.Person = FP.Model.extend({
 
     <div class="code"><div><pre>
 App.Person.reopenClass({
-  firebasePath: "folk"
+  firebasePath: "emberists"
 });</pre></div></div>
   </script>
 

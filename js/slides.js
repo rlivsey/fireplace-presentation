@@ -167,6 +167,8 @@ App.SlidesNonEmbeddedRoute = Ember.Route.extend({
 
   actions: {
     addEmployee: function(person) {
+      // NOTE - should be able to just push a person in and it'll be wrapped in the meta-model
+      // automatically - older version of FP did that so will bring it back shortly
       var company = this.controller.get("currentCompany");
       var employee = this.store.createRecord("employee", {content: person});
       company.get("employees").pushObject(employee);
@@ -174,6 +176,8 @@ App.SlidesNonEmbeddedRoute = Ember.Route.extend({
     },
 
     removeEmployee: function(person) {
+      // we find by ID because we might be given a Person when the item
+      // in the collection might be an Employee if it has a meta model
       var company  = this.controller.get("currentCompany");
       var employee = company.get("employees").findBy("id", person.get("id"));
       company.get("employees").removeObject(employee);
