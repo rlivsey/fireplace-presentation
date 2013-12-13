@@ -10,7 +10,7 @@ App.Person = FP.Model.extend({
   firstName: attr(),
   lastName:  attr(),
   dob:       attr("date"),
-  addresses: hasMany("address"),
+  addresses: hasMany(),
   fullName:  function() {
     return this.get("firstName") + ' ' + this.get("lastName");
   }.property("firstName", "lastName"),
@@ -167,11 +167,8 @@ App.SlidesNonEmbeddedRoute = Ember.Route.extend({
 
   actions: {
     addEmployee: function(person) {
-      // NOTE - should be able to just push a person in and it'll be wrapped in the meta-model
-      // automatically - older version of FP did that so will bring it back shortly
       var company = this.controller.get("currentCompany");
-      var employee = this.store.createRecord("employee", {content: person});
-      company.get("employees").pushObject(employee);
+      company.get("employees").pushObject(person);
       company.save();
     },
 
@@ -180,6 +177,9 @@ App.SlidesNonEmbeddedRoute = Ember.Route.extend({
       // in the collection might be an Employee if it has a meta model
       var company  = this.controller.get("currentCompany");
       var employee = company.get("employees").findBy("id", person.get("id"));
+
+      // TODO - should we override removeObject/replaceObjects to handle if it's a meta model?
+      // then we can just removeObject(person) and have it handled?
       company.get("employees").removeObject(employee);
       company.save();
     }

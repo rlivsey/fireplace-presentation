@@ -536,7 +536,8 @@ function getDefaultValue(obj, options) {
 (function() {
 
 var get        = Ember.get,
-    underscore = Ember.String.underscore;
+    underscore = Ember.String.underscore,
+    singularize= Ember.String.singularize;
 
 FP.RelationshipsClassMixin = Ember.Mixin.create({
   relationships: Ember.computed(function() {
@@ -602,7 +603,7 @@ function typeForRelationship(name, meta) {
   var type = meta.type;
 
   if (!type && meta.kind === 'hasMany') {
-    type = Ember.String.singularize(name);
+    type = singularize(name);
   } else if (!type) {
     type = name;
   }
@@ -1695,8 +1696,9 @@ FP.IndexedCollection = FP.Collection.extend({
       parent:   this
     });
 
-    // TODO - should we be listening now?
-    meta.listenToFirebase();
+    if (snapshot) {
+      meta.listenToFirebase();
+    }
     return meta;
   },
 
