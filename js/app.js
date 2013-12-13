@@ -87,7 +87,7 @@ App.SlidesController = Ember.Controller.extend({
   needs: "application",
   currentJSON: null,
   showingJSON: false,
-  locked: true,
+  locked: false,
   currentSlide: null,
 
   observeCurrent: function(){
