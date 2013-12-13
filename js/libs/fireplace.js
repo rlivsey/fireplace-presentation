@@ -637,6 +637,10 @@ FP.FirebaseEventQueue.prototype = {
 
     this.pending.forEach(function(item){
       model = item[0];
+
+      // if the model has been destroyed since the event came in, then
+      // don't bother trying to update it - destroying stops listening to firebase
+      // so it doesn't expect to receive any more updates anyway
       if (model.isDestroying || model.isDestroyed) {
         return;
       }
@@ -1450,6 +1454,9 @@ FP.MetaModel = Ember.ObjectProxy.extend(FP.ModelMixin, {
 
     if (attributes.length || attributes.length) {
       var attrJSON = this._super(includePriority);
+
+      // if attributes are null, then we'll get an empty object back
+      // we don't want to save this as that'll be treated as deleting the meta model!
       if (!jQuery.isEmptyObject(attrJSON)) {
         return attrJSON;
       }
@@ -1590,20 +1597,20 @@ FP.IndexedCollection = FP.Collection.extend({
     return {
       id:       get(record, 'id'),
       snapshot: null,
-      record:   record
+      record:   this.wrapRecordInMetaObjectIfNeccessary(record)
     };
   },
 
   replaceContent: function(start, numRemoved, objectsAdded) {
-    // TODO - we need to allow adding a non-meta model
-    objectsAdded.forEach(function(object) {
+    objectsAdded = objectsAdded.map(function(object) {
       if (object instanceof FP.MetaModel) {
         object.set("parent", this);
+        return this.itemFromRecord(object);
+      } else if (object instanceof Ember.Object) {
+        return this.itemFromRecord(object);
+      } else {
+        return object;
       }
-    }, this);
-
-    objectsAdded = objectsAdded.map(function(object) {
-      return (object instanceof Ember.Object) ? this.itemFromRecord(object) : object;
     }, this);
     return this._super(start, numRemoved, objectsAdded);
   },
@@ -1664,26 +1671,27 @@ FP.IndexedCollection = FP.Collection.extend({
     if (returnPromise) {
       record = store.fetchOne(type, item.id, query);
       return record.then(function(resolved) {
-        return _this.wrapRecordInMetaObjectIfNeccessary(resolved, item);
+        return _this.wrapRecordInMetaObjectIfNeccessary(resolved, item.snapshot);
       });
     } else {
       record = store.findOne(type, item.id, query);
-      return this.wrapRecordInMetaObjectIfNeccessary(record, item);
+      return this.wrapRecordInMetaObjectIfNeccessary(record, item.snapshot);
     }
   },
 
-  wrapRecordInMetaObjectIfNeccessary: function(record, item) {
+  wrapRecordInMetaObjectIfNeccessary: function(record, snapshot) {
     var as = get(this, "as");
     if (!as) {
       return record;
     }
 
-    var store = get(this, "store");
+    var store    = get(this, "store"),
+        priority = snapshot ? snapshot.getPriority() : null;
 
     var meta = store.buildRecord(as, null, {
       content:  record,
-      priority: item.snapshot.getPriority(),
-      snapshot: item.snapshot,
+      priority: priority,
+      snapshot: snapshot,
       parent:   this
     });
 
